@@ -57,7 +57,7 @@ Les contextes sont **isolés** : ils ne partagent pas leurs variables et communi
 *L'objectif de cette phase est de mettre en place l'environnement et de voir une extension minimale tourner dans Firefox.*
 
 ### 0.1 Environnement de développement
-* **Objectif :** Installer les outils et comprendre la boucle de développement. `À FAIRE`
+* **Objectif :** Installer les outils et comprendre la boucle de développement. `FAIT`
 * **Livrable :**
     * Node.js et `web-ext` installés (`npm install --global web-ext`).
     * Un dépôt Git initialisé avec un `.gitignore`.
@@ -73,7 +73,7 @@ Les contextes sont **isolés** : ils ne partagent pas leurs variables et communi
       ```
 
 ### 0.2 Première extension
-* **Objectif :** Écrire un `manifest.json` **minimal** et le charger sans erreur. `À FAIRE`
+* **Objectif :** Écrire un `manifest.json` **minimal** et le charger sans erreur. `FAIT`
 * **Livrable :**
     * Un manifest contenant uniquement : `manifest_version`, `name`, `version`, `action` (popup), `icons`, et `browser_specific_settings.gecko.id`.
     * Un popup affichant « Hello » avec un bouton.
@@ -89,7 +89,7 @@ Les contextes sont **isolés** : ils ne partagent pas leurs variables et communi
 *L'objectif de cette phase est de définir les données de l'utilisateur et de pouvoir les saisir et les conserver.*
 
 ### 1.1 Le format du profil maître
-* **Objectif :** Définir un schéma JSON unique, source de vérité pour tout le projet. `À FAIRE`
+* **Objectif :** Définir un schéma JSON unique, source de vérité pour tout le projet. `EN COURS`
 * **Livrable :** Un fichier `profile.example.json` basé sur le standard **JSON Resume** (<https://jsonresume.org/schema>), avec :
     * `basics` : prénom/nom, email, téléphone, ville, adresse, code postal, pays, liens (LinkedIn, GitHub, site web), accroche.
     * `work`, `education`, `skills`, `languages`.

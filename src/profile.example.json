@@ -1,25 +1,26 @@
 
   {
     "basics": {
-    "name": "Thomas Paquier ",
-    "label": "Programmer",
-    "image": "",
-    "email": "thomas.paquier.pro@gmail.com",
-    "phone": "(912) 555-4321",
-    "url": "https://johndoe.com",
-    "summary": "A summary of John Doe…",
-    "location": {
-      "address": "2712 Broadway St",
-      "postalCode": "CA 94115",
-      "city": "San Francisco",
-      "countryCode": "US",
-      "region": "California"
-    },
-    "profiles": [{
-      "network": "Twitter",
-      "username": "john",
-      "url": "https://twitter.com/john"
-    }]
+      "name": "Thomas Paquier ",
+      "email": "thomas.paquier.pro@gmail.com",
+      "phone": "0783798945",
+      "location": {
+        "address": "27 rue du champs soiron",
+        "postalCode": "21110",
+        "city": "Dijon",
+        "countryCode": "FR",
+        "region": "Bourgogne-Franche-Comté"
+      },
+      "profiles": [{
+        "network": "Linkedin",
+        "url": "https://www.linkedin.com/in/thomaspaquier/"
+      }, {
+        "network": "GitHub",
+        "url": "https://github.com/PaquierThomas"
+      }, {
+        "network": "Portfolio",
+        "url": "https://thomaspaquier.fr/"
+      }]
   },
   "work": [{
     "name": "Company",
@@ -30,17 +31,6 @@
     "summary": "Description…",
     "highlights": [
       "Started the company"
-    ]
-  }],
-  "volunteer": [{
-    "organization": "Organization",
-    "position": "Volunteer",
-    "url": "https://organization.com/",
-    "startDate": "2012-01-01",
-    "endDate": "2013-01-01",
-    "summary": "Description…",
-    "highlights": [
-      "Awarded 'Volunteer of the Month'"
     ]
   }],
   "education": [{
@@ -55,24 +45,11 @@
       "DB1101 - Basic SQL"
     ]
   }],
-  "awards": [{
-    "title": "Award",
-    "date": "2014-11-01",
-    "awarder": "Company",
-    "summary": "There is no spoon."
-  }],
   "certificates": [{
     "name": "Certificate",
     "date": "2021-11-07",
     "issuer": "Company",
     "url": "https://certificate.com"
-  }],
-  "publications": [{
-    "name": "Publication",
-    "publisher": "Company",
-    "releaseDate": "2014-10-01",
-    "url": "https://publication.com",
-    "summary": "Description…"
   }],
   "skills": [{
     "name": "Web Development",
@@ -85,7 +62,7 @@
   }],
   "languages": [{
     "language": "English",
-    "fluency": "Native speaker"
+    "fluency": "C1 speaker"
   }],
   "interests": [{
     "name": "Wildlife",
@@ -94,8 +71,12 @@
       "Unicorns"
     ]
   }],
+  "preferences": [{
+    "salary": "32000€",
+    "reference": "Reference…"
+  }],
   "references": [{
-    "name": "Jane Doe",
+    "name": "Cédric Degrelle",
     "reference": "Reference…"
   }],
   "projects": [{
