@@ -1,62 +1,30 @@
 {
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "@job-copilot",
-      "strict_min_version": "42.0"
-    }
+  "description": "Adds a browser action icon to the toolbar. Click the button to show a popup.",
+  "manifest_version": 3,
+  "name": "job-copilot",
+  "version": "1.0",
+  "icons": {
+    "48": "icons/claude-color.jpg"
   },
 
-  "browser_action": {
-    "default_icon": {
-      "19": "icons/claude-color.jpg",
-      "38": "icons/claude-color@2x.jpg"
-    },
-    "default_title": "Oùsuisje?",
-    "default_popup": "popup/popup.html"
-  },
-
-  "commands": {
-    "toggle-feature": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Y",
-        "linux": "Ctrl+Shift+U"
-      },
-      "description": "Envoyer un évènement 'toggle-feature'"
-    }
-  },
-
-  "content_security_policy": "script-src 'self' https://example.com; object-src 'self'",
-
-  "content_scripts": [
-    {
-      "exclude_matches": ["*://developer.mozilla.org/*"],
-      "matches": ["*://*.mozilla.org/*"],
-      "js": ["borderify.js"]
-    }
+  "permissions": [
+    "activeTab",
+    "scripting"
   ],
 
-  "description": "Une extension fun",
-
-  "icons": {
-    "48": "icons/claude-color.jpg",
-    "96": "icons/claude-color@2x.jpg"
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "job-copilot@thomas.dev",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
   },
 
-  "manifest_version": 2,
-
-  "name": "job-copilot",
-
-  "page_action": {
-    "default_icon": {
-      "19": "icons/claude-color.jpg",
-      "38": "icons/claude-color@2x.jpg"
-    },
-    "default_title": "Oùsuisje?",
+  "action": {
+    "default_icon": "icons/claude-color.jpg",
+    "default_title": "job-copilot",
     "default_popup": "popup/popup.html"
-  },
-
-  "permissions": ["webNavigation"],
-
-  "version": "0.1"
+  }
 
 }
