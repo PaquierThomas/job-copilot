@@ -1,0 +1,73 @@
+{
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "@job-copilot",
+      "strict_min_version": "42.0"
+    }
+  },
+
+  "background": {
+    "scripts": ["jquery.js", "mon-script-arriere-plan.js"]
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "19": "button/geo-19.png",
+      "38": "button/geo-38.png"
+    },
+    "default_title": "Oùsuisje?",
+    "default_popup": "popup/popup.html"
+  },
+
+  "commands": {
+    "toggle-feature": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "linux": "Ctrl+Shift+U"
+      },
+      "description": "Envoyer un évènement 'toggle-feature'"
+    }
+  },
+
+  "content_security_policy": "script-src 'self' https://example.com; object-src 'self'",
+
+  "content_scripts": [
+    {
+      "exclude_matches": ["*://developer.mozilla.org/*"],
+      "matches": ["*://*.mozilla.org/*"],
+      "js": ["borderify.js"]
+    }
+  ],
+
+  "default_locale": "en",
+
+  "description": "…",
+
+  "icons": {
+    "48": "icon.png",
+    "96": "icon@2x.png"
+  },
+
+  "manifest_version": 2,
+
+  "name": "job-copilot",
+
+  "page_action": {
+    "default_icon": {
+      "19": "button/geo-19.png",
+      "38": "button/geo-38.png"
+    },
+    "default_title": "Oùsuisje?",
+    "default_popup": "popup/popup.html"
+  },
+
+  "permissions": ["webNavigation"],
+
+  "version": "0.1",
+
+  "user_scripts": {
+    "api_script": "apiscript.js"
+  },
+
+  "web_accessible_resources": ["images/mon-image.png"]
+}
