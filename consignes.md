@@ -115,7 +115,7 @@ _L'objectif de cette phase est de définir les données de l'utilisateur et de p
 
 ### 1.3 Le panneau réagit aux changements du profil
 
-- **Objectif :** Vérifier que le panneau reste synchronisé avec le stockage. `À FAIRE`
+- **Objectif :** Vérifier que le panneau reste synchronisé avec le stockage. `FAIT`
 - **Livrable :** Le panneau affiche « Bonjour _Prénom_ » à partir du profil stocké, et invite à le remplir s'il est vide. Il se met à jour automatiquement après un « Enregistrer » grâce à l'événement `storage.onChanged`. Aucun renvoi vers la page de préférences de Firefox.
 
 ---

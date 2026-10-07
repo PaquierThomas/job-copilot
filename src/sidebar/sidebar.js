@@ -65,4 +65,13 @@ const getProfileData = browser.storage.local.get("user").then((result) => {
         document.querySelector("#saved-username").textContent = result.user.username || "—";
     }
     console.log("Profile data loaded:", result.user);
+    
+});
+browser.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes.user) {
+        const newValue = changes.user.newValue;
+        document.querySelector("#profile-json").value = newValue.username || "";
+        document.querySelector("#saved-username").textContent = newValue.username || "—";
+        console.log("Profile data updated:", newValue);
+    }
 });
