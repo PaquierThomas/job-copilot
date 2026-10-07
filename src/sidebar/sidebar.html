@@ -10,8 +10,18 @@
   <body>
     <header class="header">
       <section>
-        <button id="settings" class="settings-btn" title="Paramètres">
+        <button id="profile" class="profil-btn" title="Profil" data-tab="profile">
           Profil
+        </button>
+      </section>
+      <section>
+        <button id="documents" class="documents-btn" title="Documents" data-tab="documents">
+          Documents
+        </button>
+      </section>
+      <section>
+        <button id="fill" class="fill-btn" title="Remplir" data-tab="fill">
+          Remplir
         </button>
       </section>
 
@@ -19,27 +29,28 @@
     </header>
 
     <main class="content">
-      <section class="profile-card">
+      <section class="profile-card" data-tab="profile" hidden>
         <div class="avatar-placeholder">D</div>
 
         <div class="profile-info">
           <span class="label">Utilisateur</span>
-          <strong id="username">Dominic</strong>
+          <strong id="username">Dominit</strong>
         </div>
       </section>
 
-      <section class="data-card">
+      <section class="data-card" data-tab="documents" hidden>
         <span class="label">Vos données</span>
 
         <div class="data-row">
-          <span>Nom</span>
-          <strong id="data-username">—</strong>
+          <span>CV</span>
         </div>
 
         <div class="data-row">
-          <span>Avatar</span>
-          <strong id="data-avatar">—</strong>
+          <span>Lettre de motivation</span>
         </div>
+      </section>
+      <section class="data-card" data-tab="fill" hidden>
+        <Button>Remplir</Button>
       </section>
     </main>
 
