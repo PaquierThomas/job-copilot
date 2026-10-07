@@ -1,92 +1,100 @@
-
-  {
-    "basics": {
-      "name": "Thomas Paquier ",
-      "email": "thomas.paquier.pro@gmail.com",
-      "phone": "0783798945",
-      "location": {
-        "address": "27 rue du champs soiron",
-        "postalCode": "21110",
-        "city": "Dijon",
-        "countryCode": "FR",
-        "region": "Bourgogne-Franche-Comté"
-      },
-      "profiles": [{
+{
+  "basics": {
+    "name": "Thomas Paquier ",
+    "email": "thomas.paquier.pro@gmail.com",
+    "phone": "0783798945",
+    "location": {
+      "address": "27 rue du champs soiron",
+      "postalCode": "21110",
+      "city": "Dijon",
+      "countryCode": "FR",
+      "region": "Bourgogne-Franche-Comté"
+    },
+    "profiles": [
+      {
         "network": "Linkedin",
         "url": "https://www.linkedin.com/in/thomaspaquier/"
-      }, {
+      },
+      {
         "network": "GitHub",
         "url": "https://github.com/PaquierThomas"
-      }, {
+      },
+      {
         "network": "Portfolio",
         "url": "https://thomaspaquier.fr/"
-      }]
+      }
+    ]
   },
-  "work": [{
-    "name": "Company",
-    "position": "President",
-    "url": "https://company.com",
-    "startDate": "2013-01-01",
-    "endDate": "2014-01-01",
-    "summary": "Description…",
-    "highlights": [
-      "Started the company"
-    ]
-  }],
-  "education": [{
-    "institution": "University",
-    "url": "https://institution.com/",
-    "area": "Software Development",
-    "studyType": "Bachelor",
-    "startDate": "2011-01-01",
-    "endDate": "2013-01-01",
-    "score": "4.0",
-    "courses": [
-      "DB1101 - Basic SQL"
-    ]
-  }],
-  "certificates": [{
-    "name": "Certificate",
-    "date": "2021-11-07",
-    "issuer": "Company",
-    "url": "https://certificate.com"
-  }],
-  "skills": [{
-    "name": "Web Development",
-    "level": "Master",
-    "keywords": [
-      "HTML",
-      "CSS",
-      "JavaScript"
-    ]
-  }],
-  "languages": [{
-    "language": "English",
-    "fluency": "C1 speaker"
-  }],
-  "interests": [{
-    "name": "Wildlife",
-    "keywords": [
-      "Ferrets",
-      "Unicorns"
-    ]
-  }],
-  "preferences": [{
-    "salary": "32000€",
-    "reference": "Reference…"
-  }],
-  "references": [{
-    "name": "Cédric Degrelle",
-    "reference": "Reference…"
-  }],
-  "projects": [{
-    "name": "Project",
-    "startDate": "2019-01-01",
-    "endDate": "2021-01-01",
-    "description": "Description...",
-    "highlights": [
-      "Won award at AIHacks 2016"
-    ],
-    "url": "https://project.com/"
-  }]
+  "work": [
+    {
+      "name": "Company",
+      "position": "President",
+      "url": "https://company.com",
+      "startDate": "2013-01-01",
+      "endDate": "2014-01-01",
+      "summary": "Description…",
+      "highlights": ["Started the company"]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University",
+      "url": "https://institution.com/",
+      "area": "Software Development",
+      "studyType": "Bachelor",
+      "startDate": "2011-01-01",
+      "endDate": "2013-01-01",
+      "score": "4.0",
+      "courses": ["DB1101 - Basic SQL"]
+    }
+  ],
+  "certificates": [
+    {
+      "name": "Certificate",
+      "date": "2021-11-07",
+      "issuer": "Company",
+      "url": "https://certificate.com"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Web Development",
+      "level": "Master",
+      "keywords": ["HTML", "CSS", "JavaScript"]
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "fluency": "C1 speaker"
+    }
+  ],
+  "interests": [
+    {
+      "name": "Wildlife",
+      "keywords": ["Ferrets", "Unicorns"]
+    }
+  ],
+  "preferences": [
+    {
+      "salary": "32000€",
+      "reference": "Reference…"
+    }
+  ],
+  "references": [
+    {
+      "name": "Cédric Degrelle",
+      "reference": "Reference…"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project",
+      "startDate": "2019-01-01",
+      "endDate": "2021-01-01",
+      "description": "Description...",
+      "highlights": ["Won award at AIHacks 2016"],
+      "url": "https://project.com/"
+    }
+  ]
 }

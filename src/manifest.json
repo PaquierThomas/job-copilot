@@ -7,10 +7,7 @@
     "48": "icons/claude-color.jpg"
   },
 
-  "permissions": [
-    "activeTab",
-    "scripting"
-  ],
+  "permissions": ["activeTab", "scripting", "storage"],
 
   "browser_specific_settings": {
     "gecko": {
@@ -21,13 +18,17 @@
     }
   },
 
-  "action": {
+  "background": {
+    "scripts": ["background/background.js"]
+  },
+
+  "sidebar_action": {
     "default_icon": "icons/claude-color.jpg",
     "default_title": "job-copilot",
-    "default_popup": "popup/popup.html"
+    "default_panel": "sidebar/sidebar.html"
   },
-  "options_ui": {
-    "page": "options/options.html"
+  "action": {
+    "default_icon": "icons/claude-color.jpg",
+    "default_title": "job-copilot"
   }
-
 }

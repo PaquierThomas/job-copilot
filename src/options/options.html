@@ -1,16 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <style>
-    body { width: 200px; font-family: sans-serif; padding: 10px; text-align: center; }
-    button { padding: 8px 12px; cursor: pointer; }
-  </style>
-</head>
-<body>
-  <textarea>Hello!</textarea>
-  <button id="import-btn">Importer</button>
-  <button id="export-btn">Exporter</button>
-  <script src="options.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="options.css" />
+  </head>
+
+  <body>
+    <header>
+      <h1>Options</h1>
+
+      <a href="../popup/popup.html"> ← Retour </a>
+    </header>
+
+    <main>
+      <form id="userinfo">
+        <label for="username"> Nom </label>
+
+        <input type="text" id="username" name="username" />
+
+        <label for="avatar"> Avatar </label>
+
+        <input type="file" id="avatar" name="avatar" accept="image/*" />
+
+        <button type="submit">Enregistrer</button>
+      </form>
+    </main>
+
+    <script src="options.js"></script>
+  </body>
 </html>

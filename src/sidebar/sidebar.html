@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mon extension</title>
+    <link rel="stylesheet" href="sidebar.css" />
+  </head>
+
+  <body>
+    <header class="header">
+      <section>
+        <button id="settings" class="settings-btn" title="Paramètres">
+          Profil
+        </button>
+      </section>
+
+      <button id="settings" class="settings-btn" title="Paramètres">⚙</button>
+    </header>
+
+    <main class="content">
+      <section class="profile-card">
+        <div class="avatar-placeholder">D</div>
+
+        <div class="profile-info">
+          <span class="label">Utilisateur</span>
+          <strong id="username">Dominic</strong>
+        </div>
+      </section>
+
+      <section class="data-card">
+        <span class="label">Vos données</span>
+
+        <div class="data-row">
+          <span>Nom</span>
+          <strong id="data-username">—</strong>
+        </div>
+
+        <div class="data-row">
+          <span>Avatar</span>
+          <strong id="data-avatar">—</strong>
+        </div>
+      </section>
+    </main>
+
+    <script src="sidebar.js"></script>
+  </body>
+</html>
