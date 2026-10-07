@@ -48,3 +48,21 @@ buttons.forEach((button) => {
     }
   });
 });
+
+
+const saveProfileButton = document.querySelector("#save-profile");
+
+saveProfileButton.addEventListener("click", async () => {
+    const profileData = document.querySelector("#profile-json").value;
+    document.querySelector("#profile-json").value = profileData;
+    browser.storage.local.set({ user: { username: profileData } });
+    console.log("Profile data saved:", profileData);
+});
+
+const getProfileData = browser.storage.local.get("user").then((result) => {
+    if (result.user) {
+        document.querySelector("#profile-json").value = result.user.username || "";
+        document.querySelector("#saved-username").textContent = result.user.username || "—";
+    }
+    console.log("Profile data loaded:", result.user);
+});
