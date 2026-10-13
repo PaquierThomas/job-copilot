@@ -75,3 +75,48 @@ browser.storage.onChanged.addListener((changes, area) => {
         console.log("Profile data updated:", newValue);
     }
 });
+
+
+// Database web
+const dbName = "the_name";
+
+const request = indexedDB.open(dbName, 1);
+
+
+request.onerror = function (event) {
+  console.error("Database error: ", event.target.error);
+};
+
+request.onupgradeneeded = function (event) {
+  const db = event.target.result;
+
+  if(!db.objectStoreNames.contains("documents")) {
+    db.createObjectStore("documents", {keyPath: "id"});
+  }
+};
+
+request.onsuccess = function (event){
+  const db = event.target.result;
+  console.log("Database opened successfully");
+
+  db.onerror = function (event) {
+    alert("Database error: " + event.target.error);
+  }
+
+  const tx = db.transaction("documents", "readwrite");
+  const store = tx.objectStore("documents");
+
+  const addRequest = store.add({id:1, name: "This is my document!", label: "Document 1", type:"cv", size: "1MB", date: new Date()});
+
+  addRequest.onsuccess = function() {
+    console.log("Document added to the store");
+  };
+
+  addRequest.onerror = function(event) {
+    console.error("Error adding document: ", event.target.error);
+  };
+
+  tx.oncomplete = function (){
+    console.log("Transaction completed asked by john");
+  };
+};
