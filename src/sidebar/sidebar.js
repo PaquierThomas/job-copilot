@@ -62,7 +62,7 @@ var db = null;
 // zone 2 Ouverture de la base de données
 const dbName = "the_name";
 
-const request = indexedDB.open(dbName, 1);
+const request = indexedDB.open(dbName, 2);
 
 
 request.onerror = function (event) {
@@ -71,10 +71,18 @@ request.onerror = function (event) {
 
 request.onupgradeneeded = function (event) {
   const db = event.target.result;
+  const oldVersion = event.oldVersion;
 
-  if(!db.objectStoreNames.contains("documents")) {
-    db.createObjectStore("documents", {keyPath: "id"});
-  }
+      if (oldVersion < 2) {
+          if (db.objectStoreNames.contains("documents")) {
+              db.deleteObjectStore("documents");
+          }
+
+          db.createObjectStore("documents", {
+              keyPath: "id",
+              autoIncrement: true
+          });
+      }
 };
 
 request.onsuccess = function (event){
@@ -92,7 +100,7 @@ function addDocument(){
   const tx = db.transaction("documents", "readwrite");
   const store = tx.objectStore("documents");
 
-  const addRequest = store.add({id:1, name: "This is my document!", label: "Document 1", type:"cv", size: "1MB", date: new Date()});
+  const addRequest = store.add({name: "This is my document!", label: "Document 1", type:"cv", size: "1MB", date: new Date()});
 
   addRequest.onsuccess = function() {
     console.log("Document added to the store");

@@ -47,10 +47,20 @@
 
         <div class="data-row">
           <span>CV</span>
+          <input type="text" id="cv-name" placeholder="Nom du fichier" />
+          <input type="file" id="cv-upload" accept=".pdf,.doc,.docx" />
+          <div>
+            <button id="cv-submit">submit</button>
+          </div>
         </div>
 
         <div class="data-row">
           <span>Lettre de motivation</span>
+          <input type="text" id="cover-letter-name" placeholder="Nom du fichier" />
+          <input type="file" id="cover-letter-upload" accept=".pdf,.doc,.docx" />
+          <div>
+            <button id="cover-letter-submit">submit</button>
+          </div>
         </div>
       </section>
       <section class="data-card" data-tab="fill" hidden>
