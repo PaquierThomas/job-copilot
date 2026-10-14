@@ -1,28 +1,4 @@
-// const settings = document.querySelector("#settings");
 
-// settings.addEventListener("click", () => {
-//   browser.runtime.openOptionsPage();
-// });
-
-// async function loadData() {
-//   const result = await browser.storage.local.get("user");
-
-//   if (!result.user) {
-//     return;
-//   }
-
-//   document.querySelector("#username").textContent =
-//     result.user.username || "Utilisateur";
-
-//   document.querySelector("#data-username").textContent =
-//     result.user.username || "—";
-
-//   document.querySelector("#data-avatar").textContent = result.user.avatar
-//     ? "Importé"
-//     : "—";
-// }
-
-// loadData();
 
 
 
@@ -78,6 +54,12 @@ browser.storage.onChanged.addListener((changes, area) => {
 
 
 // Database web
+
+
+// Zone 1 var partagée
+var db = null;
+
+// zone 2 Ouverture de la base de données
 const dbName = "the_name";
 
 const request = indexedDB.open(dbName, 1);
@@ -96,12 +78,16 @@ request.onupgradeneeded = function (event) {
 };
 
 request.onsuccess = function (event){
-  const db = event.target.result;
+  db = event.target.result;
   console.log("Database opened successfully");
 
   db.onerror = function (event) {
-    alert("Database error: " + event.target.error);
+    console.error("Database error: " + event.target.error);
   }
+};
+
+// Zone 3: Les fonctions 
+function addDocument(){
 
   const tx = db.transaction("documents", "readwrite");
   const store = tx.objectStore("documents");
@@ -119,4 +105,84 @@ request.onsuccess = function (event){
   tx.oncomplete = function (){
     console.log("Transaction completed asked by john");
   };
-};
+
+}
+
+function getDocument(id){
+  if (db === null) {
+    console.error("Database is not initialized. Cannot get document.");
+    return;   
+  }
+
+  const getTx= db.transaction("documents", "readonly");
+  const getStore = getTx.objectStore("documents");
+  const getRequest = getStore.get(id);
+
+  getRequest.onsuccess = function(event) {
+    const doc = event.target.result;
+    console.log("Document retrieved: ", doc);
+  };
+
+  getRequest.onerror = function(event) {
+    console.error("Error retrieving document: ", event.target.error);
+  };
+}
+
+function getAllDocuments(){
+  if (db === null) {
+    console.error("Database is not initialized. Cannot get all documents.");
+    return;   
+  }
+  const getAllTx = db.transaction("documents", "readonly");
+  const getAllStore = getAllTx.objectStore("documents");
+  const getAllRequest = getAllStore.getAll();
+
+  getAllRequest.onsuccess = function(event) {
+    const allDocuments = event.target.result;
+    console.log("All documents retrieved: ", allDocuments);
+  };
+
+  getAllRequest.onerror = function(event) {
+    console.error("Error retrieving all documents: ", event.target.error);
+  }
+}
+
+function deleteDocument(id){
+  if (db === null) {
+    console.error("Database is not initialized. Cannot delete document.");
+    return;   
+  }
+
+
+  const delTx = db.transaction("documents", "readwrite");
+  const delStore = delTx.objectStore("documents");
+  const delRequest = delStore.delete(id);
+
+  delRequest.onsuccess = function() {
+    console.log("Document deleted successfully");
+  };
+
+  delRequest.onerror = function(event) {
+    console.error("Error deleting document: ", event.target.error);
+  };
+}
+// Fonction vider la base de documents
+function clearDocuments(){
+
+  if (db === null) {
+    console.error("Database is not initialized. Cannot clear documents.");
+    return;   
+  }
+
+  const clearTx = db.transaction("documents", "readwrite");
+  const clearStore = clearTx.objectStore("documents");
+  const clearRequest = clearStore.clear();
+
+  clearRequest.onsuccess = function(event) {
+    console.log("All documents cleared from the store");
+  };
+
+  clearRequest.onerror = function(event) {
+    console.error("Error clearing documents: ", event.target.error);
+  };
+}
