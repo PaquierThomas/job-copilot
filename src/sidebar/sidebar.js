@@ -95,12 +95,12 @@ request.onsuccess = function (event){
 };
 
 // Zone 3: Les fonctions 
-function addDocument(){
+function addDocument(fileName, fileType, fileContent, fileNature){
 
   const tx = db.transaction("documents", "readwrite");
   const store = tx.objectStore("documents");
 
-  const addRequest = store.add({name: "This is my document!", label: "Document 1", type:"cv", size: "1MB", date: new Date()});
+  const addRequest = store.add({name: fileName, nature: fileNature, type: fileType, size: fileContent.size, date: new Date()});
 
   addRequest.onsuccess = function() {
     console.log("Document added to the store");
@@ -213,6 +213,8 @@ boutonCvSubmit.addEventListener("click", function(){
 
 
   console.log(CvFile.name, CvFile.size, CvFile.type, CvFile.lastModified);
+  addDocument(CvFile.name, CvFile.type, CvFile, "cv");
+  console.log("CV added to the database");
 
 });
 
@@ -235,4 +237,6 @@ boutonCoverLetterSubmit.addEventListener("click", function(){
   console.log("cover-letter-submit button clicked");
 
   console.log(CoverLetterFile.name, CoverLetterFile.size, CoverLetterFile.type, CoverLetterFile.lastModified);
+  addDocument(CoverLetterFile.name, CoverLetterFile.type, CoverLetterFile, "cover-letter");
+  console.log("Cover letter added to the database");
 });
