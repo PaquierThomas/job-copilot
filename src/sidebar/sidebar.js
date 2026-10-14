@@ -194,3 +194,45 @@ function clearDocuments(){
     console.error("Error clearing documents: ", event.target.error);
   };
 }
+
+
+// Fonction pour les boutons submit
+
+const boutonCvSubmit = document.getElementById("cv-submit");
+
+boutonCvSubmit.addEventListener("click", function(){
+  const CvName = document.getElementById("cv-name").value;
+  const CvFile = document.getElementById("cv-upload").files[0];
+  console.log(CvName);
+  console.log(CvFile);
+  console.log("cv-submit button clicked");
+  if (!CvFile) {
+    console.error("No Cv file selected. Cannot proceed.");
+    return;   
+  }
+
+
+  console.log(CvFile.name, CvFile.size, CvFile.type, CvFile.lastModified);
+
+});
+
+const boutonCoverLetterSubmit = document.getElementById("cover-letter-submit");
+
+boutonCoverLetterSubmit.addEventListener("click", function(){
+  
+  const CoverLetterName = document.getElementById("cover-letter-name").value;
+  const CoverLetterFile = document.getElementById("cover-letter-upload").files[0];
+
+  
+
+  if (!CoverLetterFile) {
+    console.error("No cover letter file selected. Cannot proceed.");
+    return;   
+  }
+
+  console.log(CoverLetterName);
+  console.log(CoverLetterFile);
+  console.log("cover-letter-submit button clicked");
+
+  console.log(CoverLetterFile.name, CoverLetterFile.size, CoverLetterFile.type, CoverLetterFile.lastModified);
+});
