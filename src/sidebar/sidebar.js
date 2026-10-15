@@ -153,6 +153,7 @@ function getAllDocuments(){
   getAllRequest.onerror = function(event) {
     console.error("Error retrieving all documents: ", event.target.error);
   }
+  refreshDocumentList();
 }
 
 function deleteDocument(id){
@@ -195,6 +196,28 @@ function clearDocuments(){
   };
 }
 
+function refreshDocumentList() {
+  getAllDocuments();
+
+}
+
+function renderDocuments(documents) {
+  const docListe = document.getElementById("liste-documents");
+  docListe.innerHTML = "";
+
+  if (!documents || documents.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No documents available.";
+    docListe.appendChild(li);
+    return;
+  }
+
+  for (const doc of documents) {
+    const li = document.createElement("li");
+    li.textContent = (`Name: ${doc.name}, Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}`);               
+    docListe.appendChild(li);                   
+  }
+}
 
 // Fonction pour les boutons submit
 
@@ -211,6 +234,16 @@ boutonCvSubmit.addEventListener("click", function(){
     return;   
   }
 
+  if(!CvName){
+    console.error("Cv file has no name. Cannot proceed.");
+    return;
+  }
+
+  if(CvFile.size > 2 * 1024 * 1024) { // 2MB limit
+    console.error("Cv file is too large. Cannot exceed 2MB.Cant proceed.");
+    return;
+  }
+
 
   console.log(CvFile.name, CvFile.size, CvFile.type, CvFile.lastModified);
   addDocument(CvFile.name, CvFile.type, CvFile, "cv");
@@ -225,11 +258,18 @@ boutonCoverLetterSubmit.addEventListener("click", function(){
   const CoverLetterName = document.getElementById("cover-letter-name").value;
   const CoverLetterFile = document.getElementById("cover-letter-upload").files[0];
 
-  
+  if(!CoverLetterFile.name){
+    console.error("Cover letter file has no name. Cannot proceed.");
+    return;
+  }
 
   if (!CoverLetterFile) {
     console.error("No cover letter file selected. Cannot proceed.");
     return;   
+  }
+  if(CoverLetterFile.size > 4 * 1024 * 1024) { // 4MB limit
+    console.error("Cover letter file is too large. Cannot proceed.");
+    return;
   }
 
   console.log(CoverLetterName);
