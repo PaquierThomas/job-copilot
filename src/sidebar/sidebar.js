@@ -92,6 +92,7 @@ request.onsuccess = function (event){
   db.onerror = function (event) {
     console.error("Database error: " + event.target.error);
   }
+  refreshDocumentList();
 };
 
 // Zone 3: Les fonctions 
