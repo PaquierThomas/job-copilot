@@ -148,12 +148,12 @@ function getAllDocuments(){
   getAllRequest.onsuccess = function(event) {
     const allDocuments = event.target.result;
     console.log("All documents retrieved: ", allDocuments);
+    renderDocuments(getAllRequest.result);
   };
 
   getAllRequest.onerror = function(event) {
     console.error("Error retrieving all documents: ", event.target.error);
   }
-  refreshDocumentList();
 }
 
 function deleteDocument(id){
