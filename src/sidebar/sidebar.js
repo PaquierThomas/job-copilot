@@ -96,12 +96,12 @@ request.onsuccess = function (event){
 };
 
 // Zone 3: Les fonctions 
-function addDocument(fileName, fileType, fileContent, fileNature){
+function addDocument(fileName, fileType, fileContent, fileNature, fileSize){
 
   const tx = db.transaction("documents", "readwrite");
   const store = tx.objectStore("documents");
 
-  const addRequest = store.add({name: fileName, nature: fileNature, type: fileType, size: fileContent.size, date: new Date()});
+  const addRequest = store.add({name: fileName, nature: fileNature, type: fileType, size: fileSize, date: new Date(), content: fileContent});
 
   addRequest.onsuccess = function() {
     console.log("Document added to the store");
@@ -113,6 +113,7 @@ function addDocument(fileName, fileType, fileContent, fileNature){
 
   tx.oncomplete = function (){
     console.log("Transaction completed asked by john");
+    refreshDocumentList();
   };
 
 }
@@ -163,13 +164,13 @@ function deleteDocument(id){
     return;   
   }
 
-
   const delTx = db.transaction("documents", "readwrite");
   const delStore = delTx.objectStore("documents");
   const delRequest = delStore.delete(id);
 
   delRequest.onsuccess = function() {
     console.log("Document deleted successfully");
+    refreshDocumentList();
   };
 
   delRequest.onerror = function(event) {
@@ -190,6 +191,7 @@ function clearDocuments(){
 
   clearRequest.onsuccess = function(event) {
     console.log("All documents cleared from the store");
+    refreshDocumentList();
   };
 
   clearRequest.onerror = function(event) {
@@ -215,8 +217,26 @@ function renderDocuments(documents) {
 
   for (const doc of documents) {
     const li = document.createElement("li");
-    li.textContent = (`Name: ${doc.name}, Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}`);               
-    docListe.appendChild(li);                   
+    li.textContent = (`Name: ${doc.name}, Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}, Content: ${doc.content}`);               
+    docListe.appendChild(li);      
+    
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => {
+      deleteDocument(doc.id);
+    });
+    li.appendChild(deleteButton);
+
+    // Pour ouvrir le pdf
+    const openButton = document.createElement("button");
+    openButton.textContent = "Open";
+    openButton.addEventListener("click", () => {
+      console.log("Open button clicked for document: ", doc);
+      const docFile = doc.content;
+      const docUrl = URL.createObjectURL(docFile);
+      window.open(docUrl, "_blank");
+    });
+    li.appendChild(openButton);
   }
 }
 
@@ -249,7 +269,8 @@ boutonCvSubmit.addEventListener("click", function(){
   console.log(CvFile.name, CvFile.size, CvFile.type, CvFile.lastModified);
   addDocument(CvFile.name, CvFile.type, CvFile, "cv");
   console.log("CV added to the database");
-
+  document.getElementById("cv-name").value = "";
+  document.getElementById("cv-upload").value = "";
 });
 
 const boutonCoverLetterSubmit = document.getElementById("cover-letter-submit");
@@ -280,4 +301,6 @@ boutonCoverLetterSubmit.addEventListener("click", function(){
   console.log(CoverLetterFile.name, CoverLetterFile.size, CoverLetterFile.type, CoverLetterFile.lastModified);
   addDocument(CoverLetterFile.name, CoverLetterFile.type, CoverLetterFile, "cover-letter");
   console.log("Cover letter added to the database");
+  document.getElementById("cover-letter-name").value = "";
+  document.getElementById("cover-letter-upload").value = "";
 });
