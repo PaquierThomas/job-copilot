@@ -224,7 +224,7 @@ function renderDocuments(documents) {
 
   for (const doc of documents) {
     const li = document.createElement("li");
-    li.textContent = (`Name: ${doc.name}, Label: ${doc.label}, Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}, Content: ${doc.content}`);               
+    li.textContent = (`Name: ${doc.name},  Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}, Content: ${doc.content}`);               
     docListe.appendChild(li);      
     
     const deleteButton = document.createElement("button");
