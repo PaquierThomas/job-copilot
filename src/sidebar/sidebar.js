@@ -244,6 +244,10 @@ function renderDocuments(documents) {
 
 const boutonCvSubmit = document.getElementById("cv-submit");
 
+
+
+
+// Bouton submit pour CV + Lettres
 boutonCvSubmit.addEventListener("click", function(){
   const CvName = document.getElementById("cv-name").value;
   const CvFile = document.getElementById("cv-upload").files[0];
@@ -280,7 +284,7 @@ boutonCoverLetterSubmit.addEventListener("click", function(){
   const CoverLetterName = document.getElementById("cover-letter-name").value;
   const CoverLetterFile = document.getElementById("cover-letter-upload").files[0];
 
-  if(!CoverLetterFile.name){
+  if(!CoverLetterName){
     console.error("Cover letter file has no name. Cannot proceed.");
     return;
   }
