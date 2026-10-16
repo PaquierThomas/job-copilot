@@ -96,27 +96,34 @@ request.onsuccess = function (event){
 };
 
 // Zone 3: Les fonctions 
-function addDocument(fileName, fileType, fileContent, fileNature, fileSize){
 
-  const tx = db.transaction("documents", "readwrite");
-  const store = tx.objectStore("documents");
+function addDocument(fileName, fileType, fileContent, fileNature, fileSize) {
+    const tx = db.transaction("documents", "readwrite");
+    const store = tx.objectStore("documents");
 
-  const addRequest = store.add({name: fileName, nature: fileNature, type: fileType, size: fileSize, date: new Date(), content: fileContent});
+    const addRequest = store.add({
+        name: fileName,
+        nature: fileNature,
+        type: fileType,
+        size: fileSize,
+        date: new Date(),
+        content: fileContent
+    });
 
-  addRequest.onsuccess = function() {
-    console.log("Document added to the store");
-  };
+    addRequest.onsuccess = function () {
+        console.log("Document ajouté :", fileName);
+    };
 
-  addRequest.onerror = function(event) {
-    console.error("Error adding document: ", event.target.error);
-  };
+    addRequest.onerror = function (event) {
+        console.error("Erreur lors de l'ajout :", event.target.error);
+    };
 
-  tx.oncomplete = function (){
-    console.log("Transaction completed asked by john");
-    refreshDocumentList();
-  };
-
+    tx.oncomplete = function () {
+        console.log("Transaction terminée");
+        refreshDocumentList();
+    };
 }
+
 
 function getDocument(id){
   if (db === null) {
@@ -217,7 +224,7 @@ function renderDocuments(documents) {
 
   for (const doc of documents) {
     const li = document.createElement("li");
-    li.textContent = (`Name: ${doc.name}, Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}, Content: ${doc.content}`);               
+    li.textContent = (`Name: ${doc.name}, Label: ${doc.label}, Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}, Content: ${doc.content}`);               
     docListe.appendChild(li);      
     
     const deleteButton = document.createElement("button");
@@ -248,34 +255,37 @@ const boutonCvSubmit = document.getElementById("cv-submit");
 
 
 // Bouton submit pour CV + Lettres
-boutonCvSubmit.addEventListener("click", function(){
-  const CvName = document.getElementById("cv-name").value;
-  const CvFile = document.getElementById("cv-upload").files[0];
-  console.log(CvName);
-  console.log(CvFile);
-  console.log("cv-submit button clicked");
-  if (!CvFile) {
-    console.error("No Cv file selected. Cannot proceed.");
-    return;   
-  }
+boutonCvSubmit.addEventListener("click", function () {
+    const CvName = document.getElementById("cv-name").value.trim();
+    const CvFile = document.getElementById("cv-upload").files[0];
 
-  if(!CvName){
-    console.error("Cv file has no name. Cannot proceed.");
-    return;
-  }
+    if (!CvFile) {
+        console.error("Aucun fichier CV sélectionné.");
+        return;
+    }
 
-  if(CvFile.size > 2 * 1024 * 1024) { // 2MB limit
-    console.error("Cv file is too large. Cannot exceed 2MB.Cant proceed.");
-    return;
-  }
+    if (!CvName) {
+        console.error("Le nom du CV est vide.");
+        return;
+    }
 
+    if (CvFile.size > 2 * 1024 * 1024) {
+        console.error("Le fichier dépasse la limite de 2 Mo.");
+        return;
+    }
 
-  console.log(CvFile.name, CvFile.size, CvFile.type, CvFile.lastModified);
-  addDocument(CvFile.name, CvFile.type, CvFile, "cv");
-  console.log("CV added to the database");
-  document.getElementById("cv-name").value = "";
-  document.getElementById("cv-upload").value = "";
+    addDocument(
+        CvName,       
+        CvFile.type,  
+        CvFile,       
+        "cv",         
+        CvFile.size   
+    );
+
+    document.getElementById("cv-name").value = "";
+    document.getElementById("cv-upload").value = "";
 });
+
 
 const boutonCoverLetterSubmit = document.getElementById("cover-letter-submit");
 
@@ -308,3 +318,34 @@ boutonCoverLetterSubmit.addEventListener("click", function(){
   document.getElementById("cover-letter-name").value = "";
   document.getElementById("cover-letter-upload").value = "";
 });
+
+
+
+function modifyDocument(id, newLabel){
+  if (db === null) {
+    console.error("Database is not initialized. Cannot modify document.");
+    return;   
+  }
+
+  const modifyTx = db.transaction("documents","readwrite");
+  const modifyStore = modifyTx.objectStore("documents");
+  const getRequest = modifyStore.get(id);
+
+  getRequest.onsuccess = function(event) {
+    const doc = event.target.result;
+    doc.label = newLabel;
+  };
+
+  getRequest.onerror = function(event) {
+    console.error("Error retrieving document for modification: ", event.target.error);
+  };
+
+  modifyTx.oncomplete = function() {
+    console.log("Document modified successfully");
+    refreshDocumentList();
+  };
+
+  modifyTx.onerror = function(event) {
+    console.error("Error modifying document: ", event.target.error);
+  };
+}
