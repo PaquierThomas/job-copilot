@@ -321,9 +321,25 @@ boutonCoverLetterSubmit.addEventListener("click", function(){
 
 
 
-function modifyDocument(id, newLabel){
+function modifyDocument(id, newName){
   if (db === null) {
     console.error("Database is not initialized. Cannot modify document.");
+    return;   
+  }
+
+  if (!newName) {
+    console.error("New name is empty. Cannot modify document.");
+    return;   
+  }
+
+  if(!id){
+    console.error("Document ID is not provided. Cannot modify document.");
+    return;   
+  }
+
+  // Cannot find document condition
+  if (id === undefined || id === null) {
+    console.error("Document ID is undefined or null. Cannot modify document.");
     return;   
   }
 
@@ -333,7 +349,7 @@ function modifyDocument(id, newLabel){
 
   getRequest.onsuccess = function(event) {
     const doc = event.target.result;
-    doc.label = newLabel;
+    modifyStore.put({ ...doc, name: newName });
   };
 
   getRequest.onerror = function(event) {
@@ -343,6 +359,7 @@ function modifyDocument(id, newLabel){
   modifyTx.oncomplete = function() {
     console.log("Document modified successfully");
     refreshDocumentList();
+    
   };
 
   modifyTx.onerror = function(event) {
