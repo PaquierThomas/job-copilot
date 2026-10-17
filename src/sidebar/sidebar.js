@@ -96,34 +96,183 @@ request.onsuccess = function (event){
 };
 
 // Zone 3: Les fonctions 
-
-function addDocument(fileName, fileType, fileContent, fileNature, fileSize) {
-    const tx = db.transaction("documents", "readwrite");
-    const store = tx.objectStore("documents");
-
-    const addRequest = store.add({
-        name: fileName,
-        nature: fileNature,
-        type: fileType,
-        size: fileSize,
-        date: new Date(),
-        content: fileContent
-    });
-
-    addRequest.onsuccess = function () {
-        console.log("Document ajouté :", fileName);
-    };
-
-    addRequest.onerror = function (event) {
-        console.error("Erreur lors de l'ajout :", event.target.error);
-    };
-
-    tx.oncomplete = function () {
-        console.log("Transaction terminée");
-        refreshDocumentList();
-    };
+function addDocument(label, file, nature) {
+  if (db === null) {
+    console.error("Database is not initialized. Cannot add document.");
+    return;
+  }
+ 
+  const tx = db.transaction("documents", "readwrite");
+  const store = tx.objectStore("documents");
+ 
+  const addRequest = store.add({
+    label: label,          // libellé modifiable
+    name: file.name,       // nom d'origine du fichier, ne change jamais
+    nature: nature,
+    type: file.type,
+    size: file.size,
+    date: new Date(),
+    content: file
+  });
+ 
+  addRequest.onerror = function (event) {
+    console.error("Error adding document: ", event.target.error);
+  };
+ 
+  tx.oncomplete = function () {
+    console.log("Document added to the store");
+    refreshDocumentList();
+  };
+ 
+  tx.onerror = function (event) {
+    console.error("Transaction error while adding: ", event.target.error);
+  };
 }
-
+ 
+ 
+// ---------- SOUMISSION (partagée entre CV et lettre) ----------
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 Mo
+ 
+function submitDocument(nameInputId, fileInputId, nature) {
+  const nameInput = document.getElementById(nameInputId);
+  const fileInput = document.getElementById(fileInputId);
+ 
+  const label = nameInput.value.trim();
+  const file = fileInput.files[0];
+ 
+  if (!file) {
+    console.error("Aucun fichier sélectionné.");
+    return;
+  }
+ 
+  if (file.type !== "application/pdf") {
+    console.error("Le fichier doit être un PDF. Type reçu : " + file.type);
+    return;
+  }
+ 
+  if (file.size > MAX_FILE_SIZE) {
+    console.error("Le fichier dépasse la limite de 5 Mo.");
+    return;
+  }
+ 
+  if (!label) {
+    console.error("Le libellé est vide.");
+    return;
+  }
+ 
+  addDocument(label, file, nature);
+ 
+  nameInput.value = "";
+  fileInput.value = "";
+}
+ 
+document.getElementById("cv-submit").addEventListener("click", function () {
+  submitDocument("cv-name", "cv-upload", "cv");
+});
+ 
+document.getElementById("cover-letter-submit").addEventListener("click", function () {
+  submitDocument("cover-letter-name", "cover-letter-upload", "lettre");
+});
+ 
+ 
+// ---------- AFFICHAGE ----------
+function renderDocuments(documents) {
+  const docListe = document.getElementById("liste-documents");
+  docListe.innerHTML = "";
+ 
+  if (!documents || documents.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No documents available.";
+    docListe.appendChild(li);
+    return;
+  }
+ 
+  for (const doc of documents) {
+    const li = document.createElement("li");
+ 
+    // Texte de la ligne, dans un <span> pour ne pas être effacé par les boutons
+    const text = document.createElement("span");
+    const displayLabel = doc.label || doc.name; // repli pour les anciens documents
+    const sizeKo = Math.round(doc.size / 1024);
+    text.textContent =
+      `${displayLabel} (${doc.nature}) - fichier : ${doc.name} - ${sizeKo} Ko - ${new Date(doc.date).toLocaleDateString()}`;
+    li.appendChild(text);
+ 
+    // Supprimer
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => {
+      deleteDocument(doc.id);
+    });
+    li.appendChild(deleteButton);
+ 
+    // Ouvrir le PDF
+    const openButton = document.createElement("button");
+    openButton.textContent = "Open";
+    openButton.addEventListener("click", () => {
+      const docUrl = URL.createObjectURL(doc.content);
+      window.open(docUrl, "_blank");
+    });
+    li.appendChild(openButton);
+ 
+    // Renommer le libellé (le nom d'origine du fichier ne change pas)
+    const modifyButton = document.createElement("button");
+    modifyButton.textContent = "Rename";
+    modifyButton.addEventListener("click", () => {
+      const newLabel = prompt("Nouveau libellé :", displayLabel);
+      if (newLabel) {
+        modifyDocument(doc.id, newLabel);
+      }
+    });
+    li.appendChild(modifyButton);
+ 
+    docListe.appendChild(li);
+  }
+}
+ 
+ 
+// ---------- MODIFICATION DU LIBELLÉ ----------
+function modifyDocument(id, newLabel) {
+  if (db === null) {
+    console.error("Database is not initialized. Cannot modify document.");
+    return;
+  }
+ 
+  const cleanLabel = (newLabel || "").trim();
+  if (!cleanLabel) {
+    console.error("Le nouveau libellé est vide.");
+    return;
+  }
+ 
+  const modifyTx = db.transaction("documents", "readwrite");
+  const modifyStore = modifyTx.objectStore("documents");
+  const getRequest = modifyStore.get(id);
+ 
+  getRequest.onsuccess = function (event) {
+    const doc = event.target.result;
+ 
+    if (!doc) {
+      console.error("Document introuvable pour l'id : " + id);
+      return;
+    }
+ 
+    doc.label = cleanLabel;   // on change uniquement le libellé
+    modifyStore.put(doc);     // doc est complet : le fichier (content) est conservé
+  };
+ 
+  getRequest.onerror = function (event) {
+    console.error("Error retrieving document for modification: ", event.target.error);
+  };
+ 
+  modifyTx.oncomplete = function () {
+    console.log("Document modified successfully");
+    refreshDocumentList();
+  };
+ 
+  modifyTx.onerror = function (event) {
+    console.error("Error modifying document: ", event.target.error);
+  };
+}
 
 function getDocument(id){
   if (db === null) {
@@ -209,160 +358,4 @@ function clearDocuments(){
 function refreshDocumentList() {
   getAllDocuments();
 
-}
-
-function renderDocuments(documents) {
-  const docListe = document.getElementById("liste-documents");
-  docListe.innerHTML = "";
-
-  if (!documents || documents.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "No documents available.";
-    docListe.appendChild(li);
-    return;
-  }
-
-  for (const doc of documents) {
-    const li = document.createElement("li");
-    li.textContent = (`Name: ${doc.name},  Type: ${doc.type}, Size: ${doc.size} bytes, Nature: ${doc.nature}, Date: ${doc.date}, Content: ${doc.content}`);               
-    docListe.appendChild(li);      
-    
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete";
-    deleteButton.addEventListener("click", () => {
-      deleteDocument(doc.id);
-    });
-    li.appendChild(deleteButton);
-
-    // Pour ouvrir le pdf
-    const openButton = document.createElement("button");
-    openButton.textContent = "Open";
-    openButton.addEventListener("click", () => {
-      console.log("Open button clicked for document: ", doc);
-      const docFile = doc.content;
-      const docUrl = URL.createObjectURL(docFile);
-      window.open(docUrl, "_blank");
-    });
-    li.appendChild(openButton);
-  }
-}
-
-// Fonction pour les boutons submit
-
-const boutonCvSubmit = document.getElementById("cv-submit");
-
-
-
-
-// Bouton submit pour CV + Lettres
-boutonCvSubmit.addEventListener("click", function () {
-    const CvName = document.getElementById("cv-name").value.trim();
-    const CvFile = document.getElementById("cv-upload").files[0];
-
-    if (!CvFile) {
-        console.error("Aucun fichier CV sélectionné.");
-        return;
-    }
-
-    if (!CvName) {
-        console.error("Le nom du CV est vide.");
-        return;
-    }
-
-    if (CvFile.size > 2 * 1024 * 1024) {
-        console.error("Le fichier dépasse la limite de 2 Mo.");
-        return;
-    }
-
-    addDocument(
-        CvName,       
-        CvFile.type,  
-        CvFile,       
-        "cv",         
-        CvFile.size   
-    );
-
-    document.getElementById("cv-name").value = "";
-    document.getElementById("cv-upload").value = "";
-});
-
-
-const boutonCoverLetterSubmit = document.getElementById("cover-letter-submit");
-
-boutonCoverLetterSubmit.addEventListener("click", function(){
-  
-  const CoverLetterName = document.getElementById("cover-letter-name").value;
-  const CoverLetterFile = document.getElementById("cover-letter-upload").files[0];
-
-  if(!CoverLetterName){
-    console.error("Cover letter file has no name. Cannot proceed.");
-    return;
-  }
-
-  if (!CoverLetterFile) {
-    console.error("No cover letter file selected. Cannot proceed.");
-    return;   
-  }
-  if(CoverLetterFile.size > 4 * 1024 * 1024) { // 4MB limit
-    console.error("Cover letter file is too large. Cannot proceed.");
-    return;
-  }
-
-  console.log(CoverLetterName);
-  console.log(CoverLetterFile);
-  console.log("cover-letter-submit button clicked");
-
-  console.log(CoverLetterFile.name, CoverLetterFile.size, CoverLetterFile.type, CoverLetterFile.lastModified);
-  addDocument(CoverLetterFile.name, CoverLetterFile.type, CoverLetterFile, "cover-letter");
-  console.log("Cover letter added to the database");
-  document.getElementById("cover-letter-name").value = "";
-  document.getElementById("cover-letter-upload").value = "";
-});
-
-
-
-function modifyDocument(id, newName){
-  if (db === null) {
-    console.error("Database is not initialized. Cannot modify document.");
-    return;   
-  }
-
-  if (!newName) {
-    console.error("New name is empty. Cannot modify document.");
-    return;   
-  }
-
-  if(!id){
-    console.error("Document ID is not provided. Cannot modify document.");
-    return;   
-  }
-
-  // Cannot find document condition
-  if (id === undefined || id === null) {
-    console.error("Document ID is undefined or null. Cannot modify document.");
-    return;   
-  }
-
-  const modifyTx = db.transaction("documents","readwrite");
-  const modifyStore = modifyTx.objectStore("documents");
-  const getRequest = modifyStore.get(id);
-
-  getRequest.onsuccess = function(event) {
-    const doc = event.target.result;
-    modifyStore.put({ ...doc, name: newName });
-  };
-
-  getRequest.onerror = function(event) {
-    console.error("Error retrieving document for modification: ", event.target.error);
-  };
-
-  modifyTx.oncomplete = function() {
-    console.log("Document modified successfully");
-    refreshDocumentList();
-    
-  };
-
-  modifyTx.onerror = function(event) {
-    console.error("Error modifying document: ", event.target.error);
-  };
 }
