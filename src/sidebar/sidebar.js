@@ -285,6 +285,9 @@ function renderDocuments(documents) {
  
     docListe.appendChild(li);
 
+
+    // TRANSOFMRE EN RADIO BUTTON ASAP
+
     const checkbox = document.createElement("input");
     checkbox.setAttribute("type", "checkbox");
 
@@ -414,6 +417,24 @@ function deleteDocument(id){
     console.error("Error deleting document: ", event.target.error);
   };
 }
+
+
+async function removeDocument(id){
+  const doc = await getDocument(id);
+  await deleteDocument(id);
+
+  if(doc.default === true){
+    const remainingDoc = await getAllDocuments();
+    const documentFiltres = remainingDoc.filter(
+      filterdoc => filterdoc.nature === doc.nature 
+    )
+    modifyDocument(documentFiltres[0].id, {default: true})
+
+  }
+  refreshDocumentList();
+}
+
+
 // Fonction vider la base de documents
 function clearDocuments(){
 
