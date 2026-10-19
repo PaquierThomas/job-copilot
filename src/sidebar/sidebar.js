@@ -96,15 +96,19 @@ request.onsuccess = function (event){
 };
 
 // Zone 3: Les fonctions 
-function addDocument(label, file, nature) {
+async function addDocument(label, file, nature) {
   if (db === null) {
     console.error("Database is not initialized. Cannot add document.");
     return;
   }
  
+  const documentFiltres = await getDefault(nature)
+  console.log(documentFiltres?.length)
+
   const tx = db.transaction("documents", "readwrite");
   const store = tx.objectStore("documents");
- 
+  
+
   const addRequest = store.add({
     label: label,          // libellé modifiable
     name: file.name,       // nom d'origine du fichier, ne change jamais
@@ -112,8 +116,14 @@ function addDocument(label, file, nature) {
     type: file.type,
     size: file.size,
     date: new Date(),
-    content: file
+    content: file,
+    default: documentFiltres?.length < 1?true:false
   });
+
+
+  
+  
+  
  
   addRequest.onerror = function (event) {
     console.error("Error adding document: ", event.target.error);
@@ -129,11 +139,58 @@ function addDocument(label, file, nature) {
   };
 }
  
+async function getDefault(nature) {
+    const getDefaultDocTx = db.transaction("documents", "readonly");
+    const getDefaultDocStore = getDefaultDocTx.objectStore("documents");
+
+    // Récupérer tous les documents
+    const documents = await new Promise((resolve, reject) => {
+        const request = getDefaultDocStore.getAll();
+
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+
+        request.onerror = () => {
+            reject(request.error);
+        };
+    });
+
+    // Filtrer les documents
+    const documentsFiltres = documents.filter(
+        doc => doc.default === true && doc.nature === nature
+    );
+
+    console.log("Documents filtrés :", documentsFiltres);
+
+    return documentsFiltres;
+}
+
+
+function getDocument(id){
+  if (db === null) {
+    console.error("Database is not initialized. Cannot get document.");
+    return;   
+  }
+
+  const getTx= db.transaction("documents", "readonly");
+  const getStore = getTx.objectStore("documents");
+  const getRequest = getStore.get(id);
+
+  getRequest.onsuccess = function(event) {
+    const doc = event.target.result;
+    console.log("Document retrieved: ", doc);
+  };
+
+  getRequest.onerror = function(event) {
+    console.error("Error retrieving document: ", event.target.error);
+  };
+}
  
 // ---------- SOUMISSION (partagée entre CV et lettre) ----------
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 Mo
  
-function submitDocument(nameInputId, fileInputId, nature) {
+async function submitDocument(nameInputId, fileInputId, nature) {
   const nameInput = document.getElementById(nameInputId);
   const fileInput = document.getElementById(fileInputId);
  
@@ -160,7 +217,7 @@ function submitDocument(nameInputId, fileInputId, nature) {
     return;
   }
  
-  addDocument(label, file, nature);
+  await addDocument(label, file, nature);
  
   nameInput.value = "";
   fileInput.value = "";
@@ -221,28 +278,52 @@ function renderDocuments(documents) {
     modifyButton.addEventListener("click", () => {
       const newLabel = prompt("Nouveau libellé :", displayLabel);
       if (newLabel) {
-        modifyDocument(doc.id, newLabel);
+        modifyDocument(doc.id, {label: newLabel});
       }
     });
     li.appendChild(modifyButton);
  
     docListe.appendChild(li);
-  }
-}
- 
+
+    const checkbox = document.createElement("input");
+    checkbox.setAttribute("type", "checkbox");
+
+    // Si doc.default vaut true, la case est cochée
+    checkbox.checked = doc.default === true;
+
+    if(doc.default === true){
+      checkbox.style.pointerEvents = 'none';
+    }
+  
+
+    checkbox.addEventListener("change", async () => {
+        // const nature = await getDefault(doc.nature)
+        const documentFiltres = await getDefault(doc.nature)
+        console.log("test 12345  " + documentFiltres?.length)
+
+        modifyDocument(doc.id, {default: true})
+        modifyDocument(documentFiltres[0].id, {default:false})
+
+        
+        console.log("Nouvelle valeur :", checkbox.checked);
+    });
+
+    li.appendChild(checkbox);
+    docListe.appendChild(li);
+  }}
  
 // ---------- MODIFICATION DU LIBELLÉ ----------
-function modifyDocument(id, newLabel) {
+function modifyDocument(id, newDoc) {
   if (db === null) {
     console.error("Database is not initialized. Cannot modify document.");
     return;
   }
  
-  const cleanLabel = (newLabel || "").trim();
-  if (!cleanLabel) {
-    console.error("Le nouveau libellé est vide.");
-    return;
-  }
+  // const cleanLabel = (newLabel || "").trim();
+  // if (!cleanLabel) {
+  //   console.error("Le nouveau libellé est vide.");
+  //   return;
+  // }
  
   const modifyTx = db.transaction("documents", "readwrite");
   const modifyStore = modifyTx.objectStore("documents");
@@ -256,8 +337,8 @@ function modifyDocument(id, newLabel) {
       return;
     }
  
-    doc.label = cleanLabel;   // on change uniquement le libellé
-    modifyStore.put(doc);     // doc est complet : le fichier (content) est conservé
+    // doc.label = cleanLabel;   // on change uniquement le libellé
+    modifyStore.put({...doc, ...newDoc});     // doc est complet : le fichier (content) est conservé
   };
  
   getRequest.onerror = function (event) {
@@ -359,3 +440,55 @@ function refreshDocumentList() {
   getAllDocuments();
 
 }
+
+// function makeDefaultDocuments(id){
+
+//   const defaultTx = db.transaction("documents", "readwrite");
+//   const defaultStore = defaultTx.objectStore("documents");
+//   const defaultRequest = defaultStore.get(id)
+
+//   defaultRequest.onsuccess = function(event){
+//     const doc = event.target.result;
+//     console.log("Document retrieved", doc)
+
+//     if (default:true){
+//       modifyDocument(doc.id, {default: true})
+//     }
+//   }
+// }
+
+// function makeDefaultDocuments() {
+  
+ 
+//   const nature = doc.nature;
+
+
+//   if (nature === "cv") {
+//   browser.storage.local.set({ document: { default: true } });
+
+//   }
+//   if (nature === "lettre") {
+//   doc.id = 
+//   browser.storage.local.set({ document: { default: true } });
+//   }
+
+
+
+
+
+// saveProfileButton.addEventListener("click", async () => {
+//     const profileData = document.querySelector("#profile-json").value;
+//     document.querySelector("#profile-json").value = profileData;
+//     browser.storage.local.set({ user: { username: profileData } });
+//     browser.storage.local.set({ document: { default: true } });
+//     console.log("Profile data saved:", profileData);
+// });
+
+// const getProfileData = browser.storage.local.get("user").then((result) => {
+//     if (result.user) {
+//         document.querySelector("#profile-json").value = result.user.username || "";
+//         document.querySelector("#saved-username").textContent = result.user.username || "—";
+//     }
+//     console.log("Profile data loaded:", result.user);
+    
+// });
