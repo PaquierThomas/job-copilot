@@ -165,27 +165,6 @@ async function getDefault(nature) {
 
     return documentsFiltres;
 }
-
-
-function getDocument(id){
-  if (db === null) {
-    console.error("Database is not initialized. Cannot get document.");
-    return;   
-  }
-
-  const getTx= db.transaction("documents", "readonly");
-  const getStore = getTx.objectStore("documents");
-  const getRequest = getStore.get(id);
-
-  getRequest.onsuccess = function(event) {
-    const doc = event.target.result;
-    console.log("Document retrieved: ", doc);
-  };
-
-  getRequest.onerror = function(event) {
-    console.error("Error retrieving document: ", event.target.error);
-  };
-}
  
 // ---------- SOUMISSION (partagée entre CV et lettre) ----------
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 Mo
@@ -259,7 +238,7 @@ function renderDocuments(documents) {
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", () => {
-      deleteDocument(doc.id);
+      removeDocument(doc.id);
     });
     li.appendChild(deleteButton);
  
@@ -348,9 +327,9 @@ function modifyDocument(id, newDoc) {
     console.error("Error retrieving document for modification: ", event.target.error);
   };
  
-  modifyTx.oncomplete = function () {
+  modifyTx.oncomplete = async function () {
     console.log("Document modified successfully");
-    refreshDocumentList();
+    await refreshDocumentList();
   };
  
   modifyTx.onerror = function (event) {
@@ -358,7 +337,7 @@ function modifyDocument(id, newDoc) {
   };
 }
 
-function getDocument(id){
+async function getDocument(id){
   if (db === null) {
     console.error("Database is not initialized. Cannot get document.");
     return;   
@@ -366,36 +345,47 @@ function getDocument(id){
 
   const getTx= db.transaction("documents", "readonly");
   const getStore = getTx.objectStore("documents");
-  const getRequest = getStore.get(id);
+  
+  const document = await new Promise((resolve, reject) => {
+        const getRequest = getStore.get(id);
 
-  getRequest.onsuccess = function(event) {
-    const doc = event.target.result;
-    console.log("Document retrieved: ", doc);
-  };
+        getRequest.onsuccess = () => {
+            console.log("Document retrieved: ", getRequest.result);
+            resolve(getRequest.result);
+        };
 
-  getRequest.onerror = function(event) {
-    console.error("Error retrieving document: ", event.target.error);
-  };
+        getRequest.onerror = () => {
+            console.error("Error retrieving document: ", getRequest.error);
+            reject("Error retrieving document ", getRequest.error);
+        };
+    });
+  
+    return document
 }
 
-function getAllDocuments(){
+async function getAllDocuments(){
   if (db === null) {
     console.error("Database is not initialized. Cannot get all documents.");
     return;   
   }
   const getAllTx = db.transaction("documents", "readonly");
   const getAllStore = getAllTx.objectStore("documents");
-  const getAllRequest = getAllStore.getAll();
 
-  getAllRequest.onsuccess = function(event) {
-    const allDocuments = event.target.result;
-    console.log("All documents retrieved: ", allDocuments);
-    renderDocuments(getAllRequest.result);
-  };
+  const documents = await new Promise((resolve, reject) => {
+        const getAllRequest = getAllStore.getAll();
 
-  getAllRequest.onerror = function(event) {
-    console.error("Error retrieving all documents: ", event.target.error);
-  }
+        getAllRequest.onsuccess = () => {
+            console.log("All documents retrieved: ", getAllRequest.result);
+            resolve(getAllRequest.result);
+        };
+
+        getAllRequest.onerror = () => {
+            console.error("Error retrieving all documents: ", getAllRequest.error);
+            reject(getAllRequest.error);
+        };
+    });
+  
+    return documents
 }
 
 function deleteDocument(id){
@@ -408,9 +398,9 @@ function deleteDocument(id){
   const delStore = delTx.objectStore("documents");
   const delRequest = delStore.delete(id);
 
-  delRequest.onsuccess = function() {
+  delRequest.onsuccess = async function() {
     console.log("Document deleted successfully");
-    refreshDocumentList();
+    await refreshDocumentList();
   };
 
   delRequest.onerror = function(event) {
@@ -421,6 +411,7 @@ function deleteDocument(id){
 
 async function removeDocument(id){
   const doc = await getDocument(id);
+  console.log("voici le doc ", doc)
   await deleteDocument(id);
 
   if(doc.default === true){
@@ -431,12 +422,12 @@ async function removeDocument(id){
     modifyDocument(documentFiltres[0].id, {default: true})
 
   }
-  refreshDocumentList();
+  await refreshDocumentList();
 }
 
 
 // Fonction vider la base de documents
-function clearDocuments(){
+async function clearDocuments(){
 
   if (db === null) {
     console.error("Database is not initialized. Cannot clear documents.");
@@ -447,9 +438,9 @@ function clearDocuments(){
   const clearStore = clearTx.objectStore("documents");
   const clearRequest = clearStore.clear();
 
-  clearRequest.onsuccess = function(event) {
+  clearRequest.onsuccess = async function(event) {
     console.log("All documents cleared from the store");
-    refreshDocumentList();
+    await refreshDocumentList();
   };
 
   clearRequest.onerror = function(event) {
@@ -457,8 +448,10 @@ function clearDocuments(){
   };
 }
 
-function refreshDocumentList() {
-  getAllDocuments();
+async function refreshDocumentList() {
+  const documents = await getAllDocuments();
+  
+  renderDocuments(documents);
 
 }
 
