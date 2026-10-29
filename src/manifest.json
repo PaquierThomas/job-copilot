@@ -7,7 +7,9 @@
     "48": "icons/claude-color.jpg"
   },
 
-  "permissions": ["activeTab", "scripting", "storage"],
+  "permissions": ["scripting", "storage", "tabs"],
+  "optional_host_permissions": ["<all_urls>"],
+
 
   "browser_specific_settings": {
     "gecko": {

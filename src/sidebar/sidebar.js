@@ -454,3 +454,107 @@ async function refreshDocumentList() {
   renderDocuments(documents);
 
 }
+
+
+
+//  Partie injection et fetch des données d'emplois
+
+
+// const injectButton = document.querySelector("#data-inject");
+// console.log("save abc")
+// const test = console.log("choucroute")
+// const output = document.querySelector("#output-data")
+
+// function onError(error) {
+//   console.error(`Error: ${error}`);
+// }
+
+// injectButton.addEventListener("click", async () => {
+//   try {
+//     const permissions = await browser.permissions.request({permissions: ["activeTab"]})
+//     console.log("accordée ?", permissions);
+//     const [tab] = await browser.tabs.query({currentWindow: true, active:true})
+//     console.log(tab.title)
+//     const res = await browser.scripting.executeScript({
+//       target: { tabId: tab.id },
+//       func: () => document.querySelector("h1")?.textContent ?? "aucun h1",
+//     });
+    
+//     console.log("tingtang")
+//     output.textContent = "OK : " + JSON.stringify(res);
+//   } catch (err) {
+//     console.error("blabla")
+//     output.textContent = "ÉCHEC : " + err.message;
+//   }
+// });
+
+
+
+const injectButton = document.querySelector("#data-inject");
+const output = document.querySelector("#output-data");
+
+injectButton.addEventListener("click", () => {
+  // La demande de permission doit être déclenchée
+  // directement depuis le gestionnaire du clic.
+  const request = browser.permissions.request({
+    origins: ["<all_urls>"]
+  });
+
+  request.then(async (granted) => {
+    if (!granted) {
+      throw new Error("Permission refusée");
+    }
+
+    const [tab] = await browser.tabs.query({
+      active: true,
+      currentWindow: true
+    });
+
+    if (!tab?.id || !tab.url) {
+      throw new Error("URL de l'onglet inaccessible");
+    }
+
+    if (!/^https?:/.test(tab.url)) {
+      throw new Error("Page interne non autorisée : " + tab.url);
+    }
+
+    const result = await browser.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () =>
+        document.querySelector("h1")?.textContent ?? "aucun h1"
+    });
+
+    output.textContent = "OK : " + JSON.stringify(result);
+  }).catch((err) => {
+    console.error("Erreur complète :", err);
+    output.textContent = "ÉCHEC : " + err.message;
+  });
+});
+
+
+
+// const saveProfileButton = document.querySelector("#save-profile");
+
+// saveProfileButton.addEventListener("click", async () => {
+//     const profileData = document.querySelector("#profile-json").value;
+//     document.querySelector("#profile-json").value = profileData;
+//     browser.storage.local.set({ user: { username: profileData } });
+//     console.log("Profile data saved:", profileData);
+// });
+
+// const getProfileData = browser.storage.local.get("user").then((result) => {
+//     if (result.user) {
+//         document.querySelector("#profile-json").value = result.user.username || "";
+//         document.querySelector("#saved-username").textContent = result.user.username || "—";
+//     }
+//     console.log("Profile data loaded:", result.user);
+    
+// });
+// browser.storage.onChanged.addListener((changes, area) => {
+//     if (area === "local" && changes.user) {
+//         const newValue = changes.user.newValue;
+//         document.querySelector("#profile-json").value = newValue.username || "";
+//         document.querySelector("#saved-username").textContent = newValue.username || "—";
+//         console.log("Profile data updated:", newValue);
+//     }
+// });
